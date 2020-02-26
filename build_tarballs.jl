@@ -1,7 +1,7 @@
 using BinaryBuilder, Pkg
 
 name = "LAMMPS"
-tag = v"0.1.0"
+buildertag = v"0.1.0"
 
 output = Dict()
 
@@ -21,7 +21,7 @@ function extract_flag!(ARGS, flag, val = nothing)
     return (false, val)
 end
 
-requested_version = VersionNumber(extract_flag!(ARGS, "--version")[end])
+requested_version = VersionNumber(last(extract_flag!(ARGS, "--version")))
 wants_version = ver -> (requested_version === nothing || requested_version == ver)
 
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
@@ -111,7 +111,7 @@ end
 
 using Pkg.Artifacts
 
-bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(tag)"
+bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(buildertag)"
 artifacts_toml = joinpath(@__DIR__, "Artifacts.toml")
 
 for tag in keys(output)
