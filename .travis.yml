@@ -23,4 +23,4 @@ before_script:
   - julia -e 'using Pkg; Pkg.instantiate()'
 
 script:
-  - julia --color=yes build_tarballs.jl --verbose --version=$VERSION
+  - julia --color=yes build_tarballs.jl --version=$VERSION
