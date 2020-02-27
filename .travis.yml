@@ -1,0 +1,26 @@
+language: julia
+
+os:
+  - linux
+
+julia:
+  - 1.3
+
+notifications:
+  email: false
+
+env:
+  global:
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+
+jobs:
+  include:
+    # LLAMPS_7Aug2019
+    - name: "LAMMPS_7Aug2019 for Linux"
+      env: VERSION=2019.8.7
+
+before_script:
+  - julia -e 'using Pkg; Pkg.instantiate()'
+
+script:
+  - julia --color=yes build_tarballs.jl --verbose --version=$VERSION
