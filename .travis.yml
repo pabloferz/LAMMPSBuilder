@@ -13,6 +13,10 @@ env:
   global:
     - BINARYBUILDER_AUTOMATIC_APPLE=true
 
+cache:
+  directories:
+  - $HOME/.julia/artifacts
+
 jobs:
   include:
     # LLAMPS_7Aug2019
