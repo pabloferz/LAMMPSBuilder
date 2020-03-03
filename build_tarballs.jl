@@ -1,7 +1,7 @@
 using BinaryBuilder, Pkg
 
 name = "LAMMPS"
-buildertag = v"0.1.0"
+builder_tag = v"0.1.0"
 
 output = Dict()
 
@@ -21,8 +21,10 @@ function extract_flag!(ARGS, flag, val = nothing)
     return (false, val)
 end
 
-requested_version = VersionNumber(last(extract_flag!(ARGS, "--version")))
-wants_version = ver -> (requested_version === nothing || requested_version == ver)
+requested_version = last(extract_flag!(ARGS, "--version"))
+wants_version = vn -> (
+    requested_version === nothing || VersionNumber(requested_version) == vn
+)
 
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
 # CalVer, so we map these to the CalVer equivalents.
@@ -68,18 +70,18 @@ CMAKE_FLAGS=(
 )
 
 cmake -C ../cmake/presets/all_on.cmake -C ../cmake/presets/nolib.cmake "${CMAKE_FLAGS[@]}" ../cmake
-make -j${proc}
+make -j${nproc}
 make install
 """
 
 # These are the platforms we will build for by default, unless further
 # platforms are passed in on the command line
-cabi = CompilerABI(cxxstring_abi = :cxx11)
 platforms = [
-    Linux(:x86_64, libc = :glibc, compiler_abi = cabi),
-    Linux(:aarch64, libc = :glibc, compiler_abi = cabi),
-    Linux(:powerpc64le, libc = :glibc, compiler_abi = cabi)
+    Linux(:x86_64, libc=:glibc),
+    Linux(:aarch64, libc=:glibc),
+    Linux(:powerpc64le, libc=:glibc)
 ]
+platforms = expand_cxxstring_abis(platforms)
 
 # The products that we will ensure are always built
 products = [
@@ -91,8 +93,8 @@ products = [
 dependencies = [
     Dependency(PackageSpec(name = "FFMPEG_jll", uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"))
     Dependency(PackageSpec(name = "FFTW_jll", uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"))
-    Dependency(PackageSpec(name = "MPICH_jll", uuid = "7cb0a576-ebde-5e09-9194-50597f1243b4"))
     Dependency(PackageSpec(name = "OpenBLAS_jll", uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"))
+    Dependency(PackageSpec(name = "OpenMPI_jll", uuid = "fe0851c0-eecd-5654-98d4-656369965a5c"))
     Dependency(PackageSpec(name = "Zlib_jll", uuid = "83775a58-1f1d-513f-b197-d71354ab007a"))
     Dependency(PackageSpec(name = "libpng_jll", uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"))
 ]
@@ -111,7 +113,7 @@ end
 
 using Pkg.Artifacts
 
-bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(buildertag)"
+bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(builder_tag)"
 artifacts_toml = joinpath(@__DIR__, "Artifacts.toml")
 
 for tag in keys(output)
@@ -119,7 +121,7 @@ for tag in keys(output)
 
     for platform in keys(output[tag])
         tarball_name, tarball_hash, git_hash, products_info = output[tag][platform]
-        download_info = Tuple[(joinpath(bin_path, basename(tarball_name)), tarball_hash)]
+        download_info = Tuple[ (joinpath(bin_path, basename(tarball_name)), tarball_hash) ]
         bind_artifact!(artifacts_toml, src_name, git_hash;
                        platform = platform, download_info = download_info,
                        force = true, lazy = true)
