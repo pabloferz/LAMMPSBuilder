@@ -28,7 +28,7 @@ wants_version = vn -> (
 
 # Downloading the sources and BB tools can take a while when they are not
 # cached.  This should help in those instances (e.g. Travis CI)
-requested_targets = filter(arg -> !startswith(arg, "--"), ARGS)
+requested_targets = filter!(arg -> !startswith(arg, "--"), ARGS)
 wants_target = t -> ( isempty(requested_targets) || t in requested_targets )
 
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
