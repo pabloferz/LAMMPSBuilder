@@ -20,11 +20,15 @@ cache:
 jobs:
   include:
     # LLAMPS_7Aug2019
-    - name: "LAMMPS_7Aug2019 for Linux"
-      env: VERSION=2019.8.7
+    - name: "LAMMPS_7Aug2019 for Linux(:x86_64)"
+      env: VERSION=2019.8.7 TARGET=x86_64-linux-gnu
+    - name: "LAMMPS_7Aug2019 for Linux(:aarch64)"
+      env: VERSION=2019.8.7 TARGET=aarch64-linux-gnu
+    - name: "LAMMPS_7Aug2019 for Linux(:powerpc64le)"
+      env: VERSION=2019.8.7 TARGET=powerpc64le-linux-gnu
 
 before_script:
   - julia -e 'using Pkg; Pkg.instantiate()'
 
 script:
-  - julia --color=yes build_tarballs.jl --version=$VERSION
+  - julia --color=yes build_tarballs.jl --version=$VERSION $TARGET

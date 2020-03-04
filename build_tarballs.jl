@@ -26,6 +26,11 @@ wants_version = vn -> (
     requested_version === nothing || VersionNumber(requested_version) == vn
 )
 
+# Downloading the sources and BB tools can take a while when they are not
+# cached.  This should help in those instances (e.g. Travis CI)
+requested_targets = filter(arg -> !startswith(arg, "--"), ARGS)
+wants_target = t -> ( isempty(requested_targets) || t in requested_targets )
+
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
 # CalVer, so we map these to the CalVer equivalents.
 versions_map = Dict("7Aug2019" => v"2019.8.7")
@@ -76,11 +81,16 @@ make install
 
 # These are the platforms we will build for by default, unless further
 # platforms are passed in on the command line
-platforms = [
-    Linux(:x86_64, libc=:glibc),
-    Linux(:aarch64, libc=:glibc),
-    Linux(:powerpc64le, libc=:glibc)
-]
+platforms = Platform[]
+if wants_target("x86_64-linux-gnu")
+    push!(platforms, Linux(:x86_64, libc=:glibc))
+end
+if wants_target("aarch64-linux-gnu")
+    push!(platforms, Linux(:aarch64, libc=:glibc))
+end
+if wants_target("powerpc64le-linux-gnu")
+    push!(platforms, Linux(:powerpc64le, libc=:glibc))
+end
 platforms = expand_cxxstring_abis(platforms)
 
 # The products that we will ensure are always built
