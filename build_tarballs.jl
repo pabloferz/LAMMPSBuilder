@@ -1,7 +1,7 @@
 using BinaryBuilder, Pkg
 
 name = "LAMMPS"
-builder_tag = v"0.1.0"
+builder_version = v"0.1.0"
 
 output = Dict()
 
@@ -35,21 +35,21 @@ filter!(arg -> startswith(arg, "--"), ARGS)
 
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
 # CalVer, so we map these to the CalVer equivalents.
-versions_map = Dict("7Aug2019" => v"2019.8.7")
+versions_dict = Dict("7Aug2019" => v"2019.8.7")
 
 
 #===================#
 #  LAMMPS 7Aug2019  #
 #===================#
 
-lammps_tag = "7Aug2019"
-output[lammps_tag] = Dict()
+tag = "7Aug2019"
+output[tag] = Dict()
 
-version = versions_map[lammps_tag]
+version = versions_dict[tag]
 
 # Collection of sources required to complete build
 sources = [
-    FileSource("https://github.com/lammps/lammps/archive/stable_$(lammps_tag).tar.gz",
+    FileSource("https://github.com/lammps/lammps/archive/stable_$(tag).tar.gz",
                "5380c1689a93d7922e3d65d9c186401d429878bb3cbe9a692580d3470d6a253f"),
 ]
 
@@ -113,7 +113,7 @@ dependencies = [
 
 # Build the tarballs, and possibly a `build.jl` as well.
 if wants_version(version)
-    merge!(output[lammps_tag],
+    merge!(output[tag],
            build_tarballs(ARGS, name, version, sources, script, platforms, products,
                           dependencies; preferred_gcc_version = v"5.2.0"))
 end
@@ -125,7 +125,7 @@ end
 
 using Pkg.Artifacts
 
-bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(builder_tag)"
+bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(builder_version)"
 artifacts_toml = joinpath(@__DIR__, "Artifacts.toml")
 
 for tag in keys(output)
