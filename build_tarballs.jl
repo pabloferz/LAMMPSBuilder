@@ -44,12 +44,10 @@ hashes_dict = Dict(
     "3Mar2020" => "a1a2e3e763ef5baecea258732518d75775639db26e60af1634ab385ed89224d1",
 )
 
-
 #======================#
 #  Common definitions  #
 #======================#
-
-source_path = "https://github.com/lammps/lammps/archive/"
+source_url = tag -> "https://github.com/lammps/lammps/archive/stable_$(tag).tar.gz"
 
 # Bash recipe for building across all platforms
 script = raw"""
@@ -109,25 +107,25 @@ dependencies = [
     Dependency(PackageSpec(name = "libpng_jll", uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"))
 ]
 
-# Build the tarballs, and possibly a `build.jl` as well.
+#======================#
+#  Build the tarballs  #
+#======================#
 for tag in keys(versions_dict)
     version = versions_dict[tag]
     if wants_version(version)
-        sources = [ FileSource(source_path * tag * ".tar.gz", hashes_dict[tag]) ]
+        sources = [ FileSource(source_url(tag), hashes_dict[tag]) ]
         output[tag] = build_tarballs(ARGS, name, version, sources, script,
                                      platforms, products, dependencies;
                                      preferred_gcc_version = v"5.2.0")
     end
 end
 
-
 #======================#
 #  Generate artifacts  #
 #======================#
-
 using Pkg.Artifacts
 
-bin_path = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(builder_version)"
+bin_url = "https://github.com/pabloferz/LAMMPSBuilder/releases/download/v$(builder_version)"
 artifacts_toml = joinpath(@__DIR__, "Artifacts.toml")
 
 for tag in keys(output)
@@ -135,7 +133,7 @@ for tag in keys(output)
 
     for platform in keys(output[tag])
         tarball_name, tarball_hash, git_hash, products_info = output[tag][platform]
-        download_info = Tuple[ (joinpath(bin_path, basename(tarball_name)), tarball_hash) ]
+        download_info = Tuple[ (joinpath(bin_url, basename(tarball_name)), tarball_hash) ]
         bind_artifact!(artifacts_toml, src_name, git_hash;
                        platform = platform, download_info = download_info,
                        force = true, lazy = true)
