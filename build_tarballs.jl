@@ -35,23 +35,21 @@ filter!(arg -> startswith(arg, "--"), ARGS)
 
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
 # CalVer, so we map these to the CalVer equivalents.
-versions_dict = Dict("7Aug2019" => v"2019.8.7")
+versions_dict = Dict(
+    "7Aug2019" => v"2019.8.7",
+    "3Mar2020" => v"2020.3.3",
+)
+hashes_dict = Dict(
+    "7Aug2019" => "5380c1689a93d7922e3d65d9c186401d429878bb3cbe9a692580d3470d6a253f",
+    "3Mar2020" => "a1a2e3e763ef5baecea258732518d75775639db26e60af1634ab385ed89224d1",
+)
 
 
-#===================#
-#  LAMMPS 7Aug2019  #
-#===================#
+#======================#
+#  Common definitions  #
+#======================#
 
-tag = "7Aug2019"
-output[tag] = Dict()
-
-version = versions_dict[tag]
-
-# Collection of sources required to complete build
-sources = [
-    FileSource("https://github.com/lammps/lammps/archive/stable_$(tag).tar.gz",
-               "5380c1689a93d7922e3d65d9c186401d429878bb3cbe9a692580d3470d6a253f"),
-]
+source_path = "https://github.com/lammps/lammps/archive/"
 
 # Bash recipe for building across all platforms
 script = raw"""
@@ -112,10 +110,14 @@ dependencies = [
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
-if wants_version(version)
-    merge!(output[tag],
-           build_tarballs(ARGS, name, version, sources, script, platforms, products,
-                          dependencies; preferred_gcc_version = v"5.2.0"))
+for tag in keys(versions_dict)
+    version = versions_dict[tag]
+    if wants_version(version)
+        sources = [ FileSource(source_path * tag * ".tar.gz", hashes_dict[tag]) ]
+        output[tag] = build_tarballs(ARGS, name, version, sources, script,
+                                     platforms, products, dependencies;
+                                     preferred_gcc_version = v"5.2.0")
+    end
 end
 
 
