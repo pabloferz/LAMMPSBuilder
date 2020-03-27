@@ -1,7 +1,7 @@
 using BinaryBuilder, Pkg
 
 name = "LAMMPS"
-builder_version = v"0.1.0"
+builder_version = v"0.1.1"
 
 output = Dict()
 
@@ -65,9 +65,10 @@ CMAKE_FLAGS=(
     -DCMAKE_INSTALL_PREFIX=${prefix}
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TARGET_TOOLCHAIN}
     -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_CXX_FLAGS="${CXX_FLAGS[*]}"
     -DBUILD_LIB=ON
     -DBUILD_SHARED_LIBS=ON
-    -DCMAKE_CXX_FLAGS="${CXX_FLAGS[*]}"
+    -DLAMMPS_EXCEPTIONS=ON
     -DPKG_USER-INTEL=OFF
 )
 
