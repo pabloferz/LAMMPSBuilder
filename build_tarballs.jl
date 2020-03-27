@@ -57,8 +57,7 @@ mkdir build
 cd build/
 
 CXX_FLAGS=(-std=c++11)
-if [[ "${target}" == *linux* ]]
-then
+if [[ "${target}" == *linux* ]]; then
     CXX_FLAGS+=(-lrt)
 fi
 
@@ -72,7 +71,10 @@ CMAKE_FLAGS=(
     -DPKG_USER-INTEL=OFF
 )
 
-cmake -C ../cmake/presets/all_on.cmake -C ../cmake/presets/nolib.cmake "${CMAKE_FLAGS[@]}" ../cmake
+cmake ../cmake \
+    -C ../cmake/presets/all_on.cmake \
+    -C ../cmake/presets/nolib.cmake \
+    "${CMAKE_FLAGS[@]}"
 make -j${nproc}
 make install
 """
@@ -99,12 +101,30 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    Dependency(PackageSpec(name = "FFMPEG_jll", uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"))
-    Dependency(PackageSpec(name = "FFTW_jll", uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"))
-    Dependency(PackageSpec(name = "OpenBLAS_jll", uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"))
-    Dependency(PackageSpec(name = "OpenMPI_jll", uuid = "fe0851c0-eecd-5654-98d4-656369965a5c"))
-    Dependency(PackageSpec(name = "Zlib_jll", uuid = "83775a58-1f1d-513f-b197-d71354ab007a"))
-    Dependency(PackageSpec(name = "libpng_jll", uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"))
+    Dependency(PackageSpec(
+        name = "FFMPEG_jll",
+        uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
+    ))
+    Dependency(PackageSpec(
+        name = "FFTW_jll",
+        uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
+    ))
+    Dependency(PackageSpec(
+        name = "OpenBLAS_jll",
+        uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+    ))
+    Dependency(PackageSpec(
+        name = "OpenMPI_jll",
+        uuid = "fe0851c0-eecd-5654-98d4-656369965a5c"
+    ))
+    Dependency(PackageSpec(
+        name = "Zlib_jll",
+        uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+    ))
+    Dependency(PackageSpec(
+        name = "libpng_jll",
+        uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
+    ))
 ]
 
 #======================#
@@ -113,10 +133,11 @@ dependencies = [
 for tag in keys(versions_dict)
     version = versions_dict[tag]
     if wants_version(version)
-        sources = [ FileSource(source_url(tag), hashes_dict[tag]) ]
-        output[tag] = build_tarballs(ARGS, name, version, sources, script,
-                                     platforms, products, dependencies;
-                                     preferred_gcc_version = v"5.2.0")
+        sources = [FileSource(source_url(tag), hashes_dict[tag])]
+        output[tag] = build_tarballs(
+            ARGS, name, version, sources, script, platforms, products, dependencies;
+            preferred_gcc_version = v"5.2.0"
+        )
     end
 end
 
@@ -133,9 +154,10 @@ for tag in keys(output)
 
     for platform in keys(output[tag])
         tarball_name, tarball_hash, git_hash, products_info = output[tag][platform]
-        download_info = Tuple[ (joinpath(bin_url, basename(tarball_name)), tarball_hash) ]
-        bind_artifact!(artifacts_toml, src_name, git_hash;
-                       platform = platform, download_info = download_info,
-                       force = true, lazy = true)
+        download_info = Tuple[(joinpath(bin_url, basename(tarball_name)), tarball_hash)]
+        bind_artifact!(
+            artifacts_toml, src_name, git_hash;
+            platform = platform, download_info = download_info, force = true, lazy = true
+        )
     end
 end
