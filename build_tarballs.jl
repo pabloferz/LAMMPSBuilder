@@ -29,7 +29,7 @@ wants_version = vn -> (
 # Downloading the sources and BB tools can take a while when they are not
 # cached.  This should help in those instances (e.g. Travis CI)
 requested_targets = filter(arg -> !startswith(arg, "--"), ARGS)
-wants_target = t -> ( isempty(requested_targets) || t in requested_targets )
+wants_target = t -> (isempty(requested_targets) || t in requested_targets)
 # Remove collected targets from ARGS as we handle them directly
 filter!(arg -> startswith(arg, "--"), ARGS)
 
@@ -54,7 +54,7 @@ script = raw"""
 cd $WORKSPACE/srcdir
 cd lammps-*
 mkdir build
-cd build/
+cd build
 
 CXX_FLAGS=(-std=c++11)
 if [[ "${target}" == *linux* ]]; then
