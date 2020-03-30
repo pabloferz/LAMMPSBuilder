@@ -136,8 +136,7 @@ for tag in keys(versions_dict)
     if wants_version(version)
         sources = [FileSource(source_url(tag), hashes_dict[tag])]
         output[tag] = build_tarballs(
-            ARGS, name, version, sources, script, platforms, products, dependencies;
-            preferred_gcc_version = v"5.2.0"
+            ARGS, name, version, sources, script, platforms, products, dependencies
         )
     end
 end
