@@ -1,27 +1,11 @@
 using BinaryBuilder, Pkg
 
 name = "LAMMPS"
-builder_version = v"0.1.1"
+builder_version = v"0.2.0"
 
 output = Dict()
 
-function extract_flag!(ARGS, flag, val = nothing)
-    for f in ARGS
-        if f == flag || startswith(f, string(flag, "="))
-            # Check if it's just `--flag` or if it's `--flag=foo`
-            if f != flag
-                val = split(f, '=')[2]
-            end
-
-            # Drop this value from our ARGS
-            filter!(x -> x != f, ARGS)
-            return (true, val)
-        end
-    end
-    return (false, val)
-end
-
-requested_version = last(extract_flag!(ARGS, "--version"))
+requested_version = last(BinaryBuilder.extract_flag!(ARGS, "--version"))
 wants_version = vn -> (
     requested_version === nothing || VersionNumber(requested_version) == vn
 )
@@ -36,12 +20,12 @@ filter!(arg -> startswith(arg, "--"), ARGS)
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
 # CalVer, so we map these to the CalVer equivalents.
 versions_dict = Dict(
-    "7Aug2019" => v"2019.8.7",
     "3Mar2020" => v"2020.3.3",
+    "7Aug2019" => v"2019.8.7",
 )
 hashes_dict = Dict(
-    "7Aug2019" => "5380c1689a93d7922e3d65d9c186401d429878bb3cbe9a692580d3470d6a253f",
     "3Mar2020" => "a1a2e3e763ef5baecea258732518d75775639db26e60af1634ab385ed89224d1",
+    "7Aug2019" => "5380c1689a93d7922e3d65d9c186401d429878bb3cbe9a692580d3470d6a253f",
 )
 
 #======================#
@@ -103,6 +87,10 @@ products = [
 # Dependencies that must be installed before this package can be built
 dependencies = [
     Dependency(PackageSpec(
+        name = "CompilerSupportLibraries_jll",
+        uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+    ))
+    Dependency(PackageSpec(
         name = "FFMPEG_jll",
         uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
     ))
@@ -134,7 +122,7 @@ dependencies = [
 for tag in keys(versions_dict)
     version = versions_dict[tag]
     if wants_version(version)
-        sources = [FileSource(source_url(tag), hashes_dict[tag])]
+        sources = [ArchiveSource(source_url(tag), hashes_dict[tag])]
         output[tag] = build_tarballs(
             ARGS, name, version, sources, script, platforms, products, dependencies
         )
