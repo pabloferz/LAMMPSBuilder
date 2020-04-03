@@ -17,9 +17,9 @@ function save(output, name = "build_output.jl")
         write(io, "output = Dict(\n")
         for version in keys(output)
             write(io, s¹, repr(version), " => Dict(\n")
-            platform_products = output[version]
-            for platform in keys(platform_products)
-                p = platform_products[platform]
+            platforms_products = output[version]
+            for platform in keys(platforms_products)
+                p = platforms_products[platform]
                 write(io, s², repr(platform), " => (\n")
                 write(io, s³, repr(p[1]), ",\n")
                 write(io, s³, repr(p[2]), ",\n")

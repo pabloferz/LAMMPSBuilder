@@ -1,4 +1,7 @@
-using BinaryBuilder, Pkg
+using BinaryBuilder
+using Pkg
+
+const BB = BinaryBuilder
 
 include("builder_defs.jl")
 include("builder_tools.jl")
@@ -7,7 +10,7 @@ include("builder_tools.jl")
 filter!(arg -> !startswith(arg, "--deploy"), ARGS)
 
 # Allow to build specific versions
-requested_version = last(BinaryBuilder.extract_flag!(ARGS, "--version"))
+requested_version = (last ∘ BB.extract_flag!)(ARGS, "--version")
 wants_version = vn -> (
     requested_version === nothing || VersionNumber(requested_version) == vn
 )
@@ -36,10 +39,10 @@ platforms = expand_cxxstring_abis(platforms)
 #======================#
 output = Dict()
 
-for version in keys(versions_dict)
+for version in keys(versions_tags)
     if wants_version(version)
-        tag = versions_dict[version]
-        hash = hashes_dict[version]
+        tag = versions_tags[version]
+        hash = versions_hashes[version]
         sources = [ArchiveSource(source_url(tag), hash)]
         output[version] = build_tarballs(
             ARGS, name, version, sources, script, platforms, products, dependencies

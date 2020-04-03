@@ -5,11 +5,11 @@ name = "LAMMPS"
 
 # LAMMPS uses an ugly custom date-based versioning scheme, instead of SemVer or
 # CalVer, so we map these to the CalVer equivalents.
-versions_dict = Dict(
+versions_tags = Dict(
     v"2020.3.3" => "3Mar2020",
     v"2019.8.7" => "7Aug2019",
 )
-hashes_dict = Dict(
+versions_hashes = Dict(
     v"2020.3.3" => "a1a2e3e763ef5baecea258732518d75775639db26e60af1634ab385ed89224d1",
     v"2019.8.7" => "5380c1689a93d7922e3d65d9c186401d429878bb3cbe9a692580d3470d6a253f",
 )
