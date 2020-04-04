@@ -39,10 +39,9 @@ platforms = expand_cxxstring_abis(platforms)
 #======================#
 output = Dict()
 
-for version in keys(versions_tags)
+for version in keys(versions_info)
     if wants_version(version)
-        tag = versions_tags[version]
-        hash = versions_hashes[version]
+        tag, hash = versions_info[version]
         sources = [ArchiveSource(source_url(tag), hash)]
         output[version] = build_tarballs(
             ARGS, name, version, sources, script, platforms, products, dependencies
