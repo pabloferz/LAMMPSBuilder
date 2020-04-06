@@ -73,12 +73,12 @@ dependencies = [
         uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
     ))
     Dependency(PackageSpec(
-        name = "OpenBLAS_jll",
-        uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+        name = "MPICH_jll",
+        uuid = "7cb0a576-ebde-5e09-9194-50597f1243b4"
     ))
     Dependency(PackageSpec(
-        name = "OpenMPI_jll",
-        uuid = "fe0851c0-eecd-5654-98d4-656369965a5c"
+        name = "OpenBLAS_jll",
+        uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
     ))
     Dependency(PackageSpec(
         name = "Zlib_jll",
