@@ -1,8 +1,3 @@
-using BinaryBuilder
-using Pkg
-
-const BB = BinaryBuilder
-
 include("builder_defs.jl")
 include("builder_tools.jl")
 
@@ -10,7 +5,7 @@ include("builder_tools.jl")
 filter!(arg -> !startswith(arg, "--deploy"), ARGS)
 
 # Allow to build specific versions
-requested_version = (last ∘ BB.extract_flag!)(ARGS, "--version")
+requested_version = last(BB.extract_flag!(ARGS, "--version"))
 wants_version = vn -> (
     requested_version === nothing || VersionNumber(requested_version) == vn
 )

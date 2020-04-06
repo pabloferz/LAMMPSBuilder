@@ -1,3 +1,6 @@
+using BinaryBuilder
+using Pkg
+
 #==============================#
 #  Common builder definitions  #
 #==============================#
